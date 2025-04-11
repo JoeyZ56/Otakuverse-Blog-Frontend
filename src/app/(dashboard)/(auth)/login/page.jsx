@@ -1,10 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import ErrorBoundary from "../../../../components/ErrorBoundary";
-import { data } from "autoprefixer";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -12,7 +10,6 @@ const Login = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
   const params = useSearchParams();
 
   useEffect(() => {

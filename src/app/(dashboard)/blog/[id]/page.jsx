@@ -1,140 +1,103 @@
 "use client";
 import React from "react";
-import styles from "./postId.module.scss";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { notFound } from "next/navigation";
-import fetchProfileImage from "../../../api/fetchCalls/fetchProfileImage/fetchProfileImage";
-
-import { loader } from "../../../../assets";
+import { notFound, useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Footer from "../../../../components/Footer";
-import ErrorBoundary from "../../../../components/ErrorBoundary";
 
-async function getData(id) {
-  console.log("Fetching data for ID:", id);
-  try {
-    const res = await fetch(`/api/posts/${id}`, {
-      cache: "no-store",
-    });
+const BlogPost = () => {
+  const [post, setPost] = useState(null);
 
-    if (!res.ok) {
-      console.error(`Failed to fetch data for ID ${id}. Status: ${res.status}`);
-      throw new Error(`Failed to fetch data for ID ${id}`);
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error("Error in getData:", error);
-    return notFound();
-  }
-}
-
-const BlogPost = ({ params }) => {
-  const [data, setData] = useState(null);
-  const [profileImage, setProfileImage] = useState("");
+  const params = useParams();
+  const postId = params?.id;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const getPostById = async () => {
       try {
-        console.log("Fetching data for ID:", params.id);
-        const postData = await getData(params.id);
-        console.log("Received data:", postData);
+        const res = await fetch(`http://localhost:4000/api/post/${postId}`, {
+          cache: "no-store",
+        });
 
-        if (postData && postData.author) {
-          const image = await fetchProfileImage(postData.email);
-          if (image) {
-            setProfileImage(image);
-          }
+        if (!res.ok) {
+          console.error(`Failed to fetch post. Status: ${res.status}`);
+          return;
         }
-        setData(postData);
+
+        const data = await res.json();
+        setPost(data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching post:", error);
       }
     };
 
-    fetchData();
-  }, [params.id]);
+    if (postId) {
+      getPostById();
+    }
+  }, [postId]);
 
-  console.log("Profile image:", profileImage);
-
-  if (!data) {
-    return (
-      <div className="image_loader-container">
-        <Image src={loader} alt="loader" className="image__loader" />
-      </div>
-    );
+  if (!post) {
+    return <p className="py-10 text-center text-gray-500">Loading...</p>;
   }
 
   return (
-    <div className={styles.container} id="postsinfo">
-      <div className={styles.author}>
-        <div>
-          {profileImage && (
-            <Image
-              src={profileImage}
-              alt="user"
-              width={200}
-              height={200}
-              style={{ borderRadius: "50%" }}
-            />
-          )}
-        </div>
-        {/* </Link> */}
-        <span className={styles.username} id="usernameID">
-          {data.username}
+    <div className="max-w-4xl px-4 py-10 mx-auto space-y-8">
+      {/* Author Section */}
+      <div className="flex items-center space-x-4">
+        {post.profileImage && (
+          <Image
+            src={`data:image/png;base64,${Buffer.from(
+              post.profileImage.data.data
+            ).toString("base64")}`}
+            alt="User"
+            width={60}
+            height={60}
+            className="object-cover border rounded-full"
+          />
+        )}
+        <span className="text-lg font-medium text-gray-700">
+          {post.username}
         </span>
       </div>
-      <div className={styles.top}>
-        <div className={styles.info}>
-          <h1 className={styles.title}>{data.title}</h1>
-          <h3 className={styles.desc}>{data.desc}</h3>
-        </div>
-        <div className={styles.imageContainer}>
-          <Image
-            src={data.img}
-            alt="image"
-            fill={true}
-            className={styles.image}
-            id="postImageID"
-          />
-        </div>
-      </div>
-      <div className={styles.content}>
-        <p className={styles.text}>{data.content}</p>
+
+      {/* Post Title & Excerpt */}
+      <div>
+        <h1 className="mb-2 text-3xl font-bold text-purple-700">
+          {post.title}
+        </h1>
+        <h3 className="text-lg text-gray-600">{post.excerpt}</h3>
       </div>
 
-      <motion.div
-        whileInView={{ opacity: 1 }}
-        whileHover={{ scale: 1.1 }}
-        transition={{ duration: 0.5, type: "tween" }}
-        className={styles.homeLinkContainer}
-      >
-        <Link className={styles.homeLink} id="homeLink" href="/">
-          Dashboard
+      {/* Post Image */}
+      {post.img && (
+        <div className="w-full h-[300px] relative overflow-hidden rounded-lg shadow-md">
+          <Image
+            src={`data:${post.img.contentType};base64,${Buffer.from(
+              post.img.data.data
+            ).toString("base64")}`}
+            alt="Post Image"
+            fill
+            className="object-cover"
+          />
+        </div>
+      )}
+
+      {/* Post Content */}
+      <div className="prose text-gray-800 max-w-none">
+        <p>{post.content}</p>
+      </div>
+
+      {/* Back Button */}
+      <div>
+        <Link
+          href="/"
+          className="inline-block px-5 py-2 font-medium text-white transition bg-purple-600 rounded hover:bg-purple-700"
+        >
+          Back to Dashboard
         </Link>
-      </motion.div>
-      <div className={styles.footerContainer}>
-        <Footer />
       </div>
     </div>
   );
 };
 
-function DetailsErrorBoundary(props) {
-  return (
-    <ErrorBoundary
-      errorComponent={
-        <h2>
-          Error accurd attempting to view post <Link to="/">Click here</Link> to
-          go back to the home page.
-        </h2>
-      }
-    >
-      <BlogPost {...props} />
-    </ErrorBoundary>
-  );
-}
-
-export default DetailsErrorBoundary;
+export default BlogPost;

@@ -2,15 +2,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { loading } from "../../../../../public/images/index";
+import ImageUploader from "@/components/DragAndDropImage";
 
 const Register = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    profileImage: "",
   });
+  const [userImage, setUserImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -26,10 +26,15 @@ const Register = () => {
     try {
       setLoading(true);
 
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("email", form.email);
+      formData.append("password", form.password);
+      formData.append("profileImage", userImage);
+
       const res = await fetch("http://localhost:4000/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: formData,
       });
 
       if (res.status === 201) {
@@ -77,13 +82,10 @@ const Register = () => {
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
-          <input
-            name="profileImage"
-            type="url"
-            onChange={handleChange}
-            placeholder="Profile Image URL"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+
+          <ImageUploader
+            onFileSelect={(file) => setUserImage(file)}
+            label="Upload Profile Image"
           />
 
           <button
