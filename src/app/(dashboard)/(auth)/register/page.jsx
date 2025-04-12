@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ImageUploader from "@/components/DragAndDropImage";
+import { fromJSON } from "postcss";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -10,6 +11,9 @@ const Register = () => {
     email: "",
     password: "",
   });
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userImage, setUserImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -24,6 +28,11 @@ const Register = () => {
     e.preventDefault();
 
     try {
+      if (form.password !== confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+
       setLoading(true);
 
       const formData = new FormData();
@@ -74,14 +83,42 @@ const Register = () => {
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
-          <input
-            name="password"
-            type="password"
-            onChange={handleChange}
-            placeholder="Password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+          {error && <p className="font-bold text-red-500">* {error}</p>}
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Password"
+              required
+              className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute text-sm text-purple-600 -translate-y-1/2 top-1/2 right-3 hover:underline"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <div className="relative">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm Password"
+              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute text-sm text-purple-600 -translate-y-1/2 top-1/2 right-3 hover:underline"
+            >
+              {showConfirmPassword ? "Hide" : "Show"}
+            </button>
+          </div>
 
           <ImageUploader
             onFileSelect={(file) => setUserImage(file)}

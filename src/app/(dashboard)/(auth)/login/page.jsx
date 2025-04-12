@@ -6,6 +6,7 @@ import Link from "next/link";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -69,14 +70,24 @@ const Login = () => {
             required
             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
-          <input
-            name="password"
-            type="password"
-            onChange={handleChange}
-            placeholder="Password"
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={form.password}
+              onChange={handleChange}
+              placeholder="Password"
+              required
+              className="w-full px-4 py-2 pr-12 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute text-sm text-purple-600 -translate-y-1/2 top-1/2 right-3 hover:underline"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
 
           <button
             type="submit"
