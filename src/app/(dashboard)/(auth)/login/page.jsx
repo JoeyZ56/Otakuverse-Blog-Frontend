@@ -35,16 +35,22 @@ const Login = () => {
       const res = await fetch("http://localhost:4000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
       });
 
       const data = await res.json();
+      console.log("Full login response payload:", data);
 
       if (res.ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "/";
+        localStorage.setItem("userId", data.user.id);
+
+        window.location.href = "/account";
       } else {
-        setError(data.message || "Invalid credentials");
+        setError(data.message || "Email or Password is incorrect");
       }
     } catch (err) {
       console.error("Login error:", err);

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ImageUploader from "@/components/DragAndDropImage";
-import { fromJSON } from "postcss";
 
 const Register = () => {
   const [form, setForm] = useState({

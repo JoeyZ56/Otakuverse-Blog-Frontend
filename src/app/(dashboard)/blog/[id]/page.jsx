@@ -2,9 +2,8 @@
 import React from "react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { notFound, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
 
 const BlogPost = () => {
   const [post, setPost] = useState(null);

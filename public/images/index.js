@@ -18,7 +18,6 @@ import downArrow from "./icons/down-arrow.svg";
 import upArrow from "./icons/up-arrow.svg";
 
 //UI
-import loader from "./ui/loader.svg";
 
 export default {
   embla1,
@@ -36,5 +35,4 @@ export default {
   embla13,
   downArrow,
   upArrow,
-  loader,
 };
