@@ -5,6 +5,7 @@ import { ClipLoader } from "react-spinners";
 import Image from "next/image";
 // // import UserPosts from "../../userposts/page";
 import Modal from "../../../components/Modal";
+import UserPosts from "./(userposts)/page";
 
 // import EditUserInfoModal from "../../../components/EditUserInfoModal";
 
@@ -197,6 +198,7 @@ const UserAccount = () => {
           </Modal>
         </div>
       )}
+      <UserPosts />
     </div>
   );
 };
